@@ -10,11 +10,23 @@ for prog in zenity openvpn3; do
 done
 
 main () {
-	zenity --list --title='OpenVPN3 Configuration Manager' --ok-label='Connect' --cancel-label='Exit' --extra-button='Configure' --column='Configuration Path' $(openvpn3 configs-list | grep /net/openvpn/v3/configuration/)
+	zenity --list \
+		--title='OpenVPN3 Configuration Manager' \
+		--ok-label='Connect' \
+		--cancel-label='Exit' \
+		--extra-button='Configure' \
+		--column='Configuration Path' \
+		$(openvpn3 configs-list | grep /net/openvpn/v3/configuration/)
 }
 
 configure () {
-	zenity --list --title='OpenVPN3 Configuration Manager' --ok-label='Remove' --cancel-label='Back' --extra-button='Import' --column='Configuration Path' $(openvpn3 configs-list | grep /net/openvpn/v3/configuration/)
+	zenity --list \
+		--title='OpenVPN3 Configuration Manager' \
+		--ok-label='Remove' \
+		--cancel-label='Back' \
+		--extra-button='Import' \
+		--column='Configuration Path' \
+		$(openvpn3 configs-list | grep /net/openvpn/v3/configuration/)
 }
 
 import () {
