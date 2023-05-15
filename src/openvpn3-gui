@@ -35,14 +35,14 @@ import () {
 
 	declare configs=$(openvpn3 configs-list | grep /net/openvpn/v3/configuration/)
 
-	if [[ $configs == *"$basename"* && $configs != '' ]]; then
+	if [[ $configs == *"$basename"* && $configs != '' && $basename != '' ]]; then
 		zenity --info --text='This config has already been imported'
-	else
+	elif [[ $configs != '' && $basename != '' ]]; then
 		openvpn3 config-import --persistent --config $target
 	fi
 }
 
-config_remove () {
+remove () {
 	openvpn3 config-remove --force --config-path $action
 }
 
@@ -54,13 +54,17 @@ while :; do
 	declare action=$(main)
 
 	if [[ $action == 'Configure' ]]; then
-		declare action=$(configure)
+		while :; do
+			declare action=$(configure)
 
-		if [[ $action == 'Import' ]]; then
-			import
-		elif [[ $action == '/net/openvpn/v3/configuration/'* ]]; then
-			config_remove
-		fi
+			if [[ $action == 'Import' ]]; then
+				import
+			elif [[ $action == '/net/openvpn/v3/configuration/'* ]]; then
+				remove
+			else
+				break
+			fi
+		done
 	elif [[ $action == '/net/openvpn/v3/configuration/'* ]]; then
 		session_start
 	else
