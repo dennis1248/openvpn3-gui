@@ -11,17 +11,17 @@ done
 
 main () {
 	zenity --list \
-		--title='OpenVPN3 Configuration Manager' \
+		--title='OpenVPN3 GUI' \
 		--ok-label='Connect' \
 		--cancel-label='Exit' \
-		--extra-button='Configure' \
+		--extra-button='Manage' \
 		--column='Configuration Path' \
 		$(openvpn3 configs-list | grep /net/openvpn/v3/configuration/)
 }
 
-configure () {
+manage () {
 	zenity --list \
-		--title='OpenVPN3 Configuration Manager' \
+		--title='OpenVPN3 GUI' \
 		--ok-label='Remove' \
 		--cancel-label='Back' \
 		--extra-button='Import' \
@@ -53,9 +53,9 @@ session_start () {
 while :; do
 	declare action=$(main)
 
-	if [[ $action == 'Configure' ]]; then
+	if [[ $action == 'Manage' ]]; then
 		while :; do
-			declare action=$(configure)
+			declare action=$(manage)
 
 			if [[ $action == 'Import' ]]; then
 				import
