@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+for prog in zenity openvpn3; do
+	which $prog > /dev/null
+
+	if [[ ! $? -eq 0 ]]; then
+		zenity --error --text="$prog is not installed" || printf "$prog is not installed\n"
+		exit 1
+	fi
+done
+
+main () {
+	declare configs=$(openvpn3 configs-list | grep /net/openvpn/v3/configuration/)
+	echo $configs | zenity --list --title='OpenVPN3 Configuration Manager' --ok-label='Connect' --extra-button='Import' --column='Configuration Path'
+}
+
+import () {
+	declare target=$(zenity --file-selection)
+	declare filename=$(basename $target)
+
+	if [[ $target == *"$filename"* && $filname != '' ]]; then
+		zenity --info --text='This config has already been imported'
+	else
+		openvpn3 config-import --persistent --config $target
+	fi
+}
+
+session_start () {
+	openvpn3 session-start --config-path $action
+}
+
+while :; do
+	declare action=$(main)
+
+	if [[ $action == 'Import' ]]; then
+		import
+	elif [[ $action == '/net/openvpn/v3/configuration/'* ]]; then
+		session_start
+	else
+		exit 0
+	fi
+done
