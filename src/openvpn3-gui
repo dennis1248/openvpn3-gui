@@ -20,13 +20,24 @@ main () {
 }
 
 manage () {
-	zenity --list \
-		--title='OpenVPN3 GUI' \
-		--ok-label='Remove' \
-		--cancel-label='Back' \
-		--extra-button='Import' \
-		--column='Configuration Path' \
-		$(openvpn3 configs-list | grep /net/openvpn/v3/configuration/)
+		while :; do
+
+			declare action=$(zenity --list \
+				--title='OpenVPN3 GUI' \
+				--ok-label='Remove' \
+				--cancel-label='Back' \
+				--extra-button='Import' \
+				--column='Configuration Path' \
+				$(openvpn3 configs-list | grep /net/openvpn/v3/configuration/))
+
+			if [[ $action == 'Import' ]]; then
+				import
+			elif [[ $action == '/net/openvpn/v3/configuration/'* ]]; then
+				remove
+			else
+				break
+			fi
+		done
 }
 
 import () {
@@ -37,7 +48,7 @@ import () {
 
 	if [[ $configs == *"$basename"* && $configs != '' && $basename != '' ]]; then
 		zenity --info --text='This config has already been imported'
-	elif [[ $configs != '' && $basename != '' ]]; then
+	elif [[ $basename != '' ]]; then
 		openvpn3 config-import --persistent --config $target
 	fi
 }
@@ -54,20 +65,11 @@ while :; do
 	declare action=$(main)
 
 	if [[ $action == 'Manage' ]]; then
-		while :; do
-			declare action=$(manage)
-
-			if [[ $action == 'Import' ]]; then
-				import
-			elif [[ $action == '/net/openvpn/v3/configuration/'* ]]; then
-				remove
-			else
-				break
-			fi
-		done
+		manage
 	elif [[ $action == '/net/openvpn/v3/configuration/'* ]]; then
 		session_start
 	else
 		exit 0
 	fi
 done
+
